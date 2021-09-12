@@ -14,9 +14,9 @@ import (
 func (server *Server) RawGet(_ context.Context, req *kvrpcpb.RawGetRequest) (*kvrpcpb.RawGetResponse, error) {
 	// Your Code Here (1).
 	s := server.storage
-	cf 		:= req.Cf
-	key 	:= req.Key
-	res 	:= kvrpcpb.RawGetResponse{}
+	cf := req.Cf
+	key := req.Key
+	res := kvrpcpb.RawGetResponse{}
 
 	reader, err := s.Reader(req.Context)
 	if err != nil {
@@ -35,15 +35,15 @@ func (server *Server) RawPut(_ context.Context, req *kvrpcpb.RawPutRequest) (*kv
 	// Your Code Here (1).
 	// Hint: Consider using Storage.Modify to store data to be modified
 	s := server.storage
-	cf 		:= req.Cf
-	key 	:= req.Key
-	val     := req.Value
-	res 	:= kvrpcpb.RawPutResponse{}
-	
+	cf := req.Cf
+	key := req.Key
+	val := req.Value
+	res := kvrpcpb.RawPutResponse{}
+
 	data := storage.Put{
-		Key: key, 
-		Value: val, 
-		Cf: cf,
+		Key:   key,
+		Value: val,
+		Cf:    cf,
 	}
 	err := s.Write(req.Context, []storage.Modify{{data}})
 	return &res, err
@@ -54,13 +54,13 @@ func (server *Server) RawDelete(_ context.Context, req *kvrpcpb.RawDeleteRequest
 	// Your Code Here (1).
 	// Hint: Consider using Storage.Modify to store data to be deleted
 	s := server.storage
-	cf 		:= req.Cf
-	key 	:= req.Key
-	res 	:= kvrpcpb.RawDeleteResponse{}
-	
+	cf := req.Cf
+	key := req.Key
+	res := kvrpcpb.RawDeleteResponse{}
+
 	data := storage.Delete{
-		Key: key, 
-		Cf: cf,
+		Key: key,
+		Cf:  cf,
 	}
 	err := s.Write(req.Context, []storage.Modify{{data}})
 	return &res, err
@@ -70,28 +70,28 @@ func (server *Server) RawDelete(_ context.Context, req *kvrpcpb.RawDeleteRequest
 func (server *Server) RawScan(_ context.Context, req *kvrpcpb.RawScanRequest) (*kvrpcpb.RawScanResponse, error) {
 	// Your Code Here (1).
 	// Hint: Consider using reader.IterCF
-	s 			:= server.storage
-	cf 			:= req.Cf
-	start_key 	:= req.StartKey
-	limit       := req.Limit
-	res 		:= kvrpcpb.RawScanResponse{}
+	s := server.storage
+	cf := req.Cf
+	start_key := req.StartKey
+	limit := req.Limit
+	res := kvrpcpb.RawScanResponse{}
 
 	reader, err := s.Reader(req.Context)
-	it 			:= reader.IterCF(cf)
+	it := reader.IterCF(cf)
 	it.Seek(start_key)
 
 	for i := uint32(0); i < limit; i++ {
 		print(i)
 		item := it.Item()
-		key  := item.Key()
+		key := item.Key()
 		val, _ := item.Value()
-		kv   := kvrpcpb.KvPair{
-			Key: key,
+		kv := kvrpcpb.KvPair{
+			Key:   key,
 			Value: val,
 		}
 		res.Kvs = append(res.Kvs, &kv)
 		it.Next()
-		if !it.Valid(){
+		if !it.Valid() {
 			break
 		}
 	}
